@@ -1,0 +1,12 @@
+.idea
+*.swp
+*~
+*.log
+target/
+build/
+gen-*/
+bin/
+*.ipr
+*.iml
+*.iws
+**/ConfigRoot
