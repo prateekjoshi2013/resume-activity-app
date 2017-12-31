@@ -39,7 +39,7 @@ public class ActivitiManager {
 
     public List<UserTask> getTasksForUser(String userId){
         List<Group>groups=identityService.createGroupQuery().groupMember(userId).list();
-        List<String>groupIds=groups.stream().map(group -> {return group.getName();}).collect(Collectors.toList());
+        List<String>groupIds=groups.stream().map(group -> { return group.getName();}).collect(Collectors.toList());
         System.out.println(groupIds);
         List<Task> tasks = taskService.createTaskQuery().taskCandidateGroupIn(groupIds).list();
         List<UserTask> userTaskList=tasks.stream().map(element->convertActivitiTaskToUserTask(element)).collect(Collectors.toList());
@@ -95,30 +95,10 @@ public class ActivitiManager {
         taskService.setVariable(task.getTaskId(),"candidate",candidate);
         taskService.complete(task.getTaskId());
         return task.getTaskId()+" completed";
-
-
     }
 
     public String getResume(String taskId){
         Candidate candidate=(Candidate) taskService.getVariable(taskId,"candidate");
         return candidate.getResume();
     }
-//    public String prelimApprovalTask(String taskId,String userId,Candidate candidate){
-//        String status="";
-//        taskService.claim(taskId,userId);
-//        taskService.setVariable(taskId,"candidate",candidate);
-//        taskService.complete(taskId);
-//        return status;
-//    }
-//
-//    public String finalApprovalTask(String taskId){
-//        String status="";
-//        return status;
-//    }
-//
-//    public String recategorizeTask(String taskId){
-//        String status="";
-//        return status;
-//    }
-
 }

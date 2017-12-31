@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * Created by pjoshi1 on 11/23/2017.
  */
-
+@CrossOrigin
 @RestController
 @RequestMapping("/resumeapp")
 public class ActivitiContoller {

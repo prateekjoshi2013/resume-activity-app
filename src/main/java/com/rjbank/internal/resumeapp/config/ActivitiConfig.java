@@ -57,8 +57,6 @@ public class ActivitiConfig {
         User user=identityService.newUser("admin");
         user.setPassword("admin");
         identityService.saveUser(user);
-        Group group=identityService.newGroup("admin");
-        identityService.saveGroup(group);
         return identityService ;
     }
 

@@ -111,6 +111,14 @@
             <showWarnings>true</showWarnings>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>com.heroku.sdk</groupId>
+          <artifactId>heroku-maven-plugin</artifactId>
+          <version>2.0.2</version>
+          <configuration>
+            <appName>resumeapproval</appName>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
     <finalName>resume-app</finalName>

@@ -1,18 +1,18 @@
 package com.rjbank.internal.resumeapp.manager;
 
+import com.rjbank.internal.resumeapp.model.LoginReponse;
 import com.rjbank.internal.resumeapp.model.Membership;
+import com.rjbank.internal.resumeapp.model.ModifyMembershipRequest;
 import com.rjbank.internal.resumeapp.model.UserInformation;
 import org.activiti.engine.IdentityService;
 import org.activiti.engine.identity.Group;
 import org.activiti.engine.identity.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -24,6 +24,13 @@ public class IdentityManager {
     @Autowired
     private IdentityService identityService;
 
+    public LoginReponse login(){
+        String userId =SecurityContextHolder.getContext().getAuthentication().getName();
+        User user=identityService.createUserQuery().userId(userId).singleResult();
+        LoginReponse loginResponse=new LoginReponse(user.getFirstName(),user.getLastName(),user.getEmail());
+        return loginResponse;
+    }
+
     public String register( UserInformation userInformation){
         User user=identityService.createUserQuery().userId(userInformation.getUserId()).singleResult();
         if(user==null){
@@ -33,15 +40,39 @@ public class IdentityManager {
             user.setLastName(userInformation.getLastName());
             user.setPassword(userInformation.getPassword());
             identityService.saveUser(user);
-            Membership membership=new Membership(userInformation.getUserId(),userInformation.getGroups());
-            modifyMembership(membership);
           return "user created";
         }else{
            return "user already exists";
         }
     }
 
-    public String modifyMembership(Membership membership) {
+    public void modifyMembership(ModifyMembershipRequest modifyMembershipRequest){
+        Membership addMembership=new Membership();
+        Membership deleteMembership=new Membership();
+        addMembership.setMembership(new ArrayList<>());
+        deleteMembership.setMembership(new ArrayList<>());
+        addMembership.setUser(modifyMembershipRequest.getUser());
+        deleteMembership.setUser(modifyMembershipRequest.getUser());
+        if(modifyMembershipRequest.getGroups().isResumeUploadGroup()){
+            addMembership.getMembership().add("resumeUploadGroup");
+        }else{
+            deleteMembership.getMembership().add("resumeUploadGroup");
+        }
+        if(modifyMembershipRequest.getGroups().isPrelimApprovalGroup()){
+            addMembership.getMembership().add("prelimApprovalGroup");
+        }else{
+            deleteMembership.getMembership().add("prelimApprovalGroup");
+        }
+        if(modifyMembershipRequest.getGroups().isFinalApprovalGroup()){
+            addMembership.getMembership().add("finalApprovalGroup");
+        }else{
+            deleteMembership.getMembership().add("finalApprovalGroup");
+        }
+        addMembership(addMembership);
+        deleteMembership(deleteMembership);
+    }
+
+    public String addMembership(Membership membership) {
         Group grp = null;
         for (String group : membership.getMembership()) {
             grp = identityService.createGroupQuery().groupId(group).singleResult();
